@@ -1,0 +1,31 @@
+rm()
+dat<-read.csv(file = "clipboard", sep = "\t", header=TRUE)
+dat
+View(dat)
+names(dat)
+library(readxl)
+dat$trtcomb<-paste(dat$covercrops,"*",dat$Biocontrol)
+dat$trtcomb<-as.factor(dat$trtcomb)
+dat$rep<-as.factor(dat$REP)
+head(dat[,c("trtcomb","rep","Severity")])
+model<-aov(Severity~trtcomb+rep,data=dat)
+anova(model)
+TukeyHSD(model,"trtcomb",conf.level = 0.95,ordered = TRUE, group=TRUE)
+
+plot(TukeyHSD(model, "trtcomb"))
+plot(model)
+
+library(car)
+
+library(multcompView)
+library(multcomp)
+
+library(lsmeans)
+library(emmeans)
+
+marginal = lsmeans(model, ~ trtcomb)
+marginal
+cld(marginal,
+    alpha=0.05,
+    Letters=letters,      ### Use lower-case letters for .group
+    adjust="tukey") 
